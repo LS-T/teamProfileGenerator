@@ -49,9 +49,9 @@ function createManager() {
       type: "confirm",
       message:"Would you like to add another team member?",
       name: "addTeamMember",
-    },
+    }
     
-  ]).then(answers => {
+    ]).then(answers => {
       const manager = new Manager(answers.managerName, answers.managerID,answers.managerEmail,answers.managerOfficeNumber);
       teamMembers.push(manager);
 
@@ -117,7 +117,7 @@ function createIntern() {
     ]).then(answers => {
         const intern = new Intern(answers.internName,answers.internID,answers.internEmail,answers.internSchool);
         teamMembers.push(intern);
-        if(answers.add-team-member) {
+        if(answers.addTeamMember) {
             createTeam();
         } else {
             buildTeam();
