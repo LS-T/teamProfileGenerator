@@ -4,98 +4,174 @@ const fs = require("fs");
 
 const inquirer = require("inquirer");
 
-const manager = require("./lib/Manager");
+const Manager = require("./lib/Manager");
 
-const engineer = require("./lib/Engineer");
+const Engineer = require("./lib/Engineer");
 
-const intern = require("./lib/Intern");
+const Intern = require("./lib/Intern");
 
 const render = require("./src/page-template.js");
 
-// pageTemplate(team);
+
+
+const teamMembers = [];
 
 const OUTPUT_DIR = path.resolve(__dirname, "dist");
 
 const outputPath = path.join(OUTPUT_DIR, "team.html");
 
-function runApp() {
-  //   ...Inquirer prompt and the functions that will ask users about manager, intern, and engineer.
+function createManager() {
+  
 
   inquirer.prompt([
     {
       type: "input",
       message: "What is the team manager's name?",
-      name: "manager-name",
+      name: "managerName",
     },
     {
       type: "input",
       message: "What is the team manager's employee ID?",
-      name: "manager-ID",
+      name: "managerID",
     },
     {
       type: "input",
       message: "What is the team manager's email address?",
-      name: "manager-email",
+      name: "managerEmail",
     },
     {
       type: "input",
       message: "What is the team manager's office number?",
-      name: "manager-office-number",
+      name: "managerOfficeNumber",
     },
+     
     {
-      type: "list",
-      message:
-        "Would you like to add an engineer or an intern to finish building team?",
-      choices: ["engineer", "intern"],
-      name: "add-team-member",
+      type: "confirm",
+      message:"Would you like to add another team member?",
+      name: "addTeamMember",
     },
-    {
-      type: "input",
-      message: "What is the engineer's name?",
-      name: "engineer-name",
-    },
-    {
-      type: "input",
-      message: "What is the engineer's employee ID?",
-      name: "engineer-ID",
-    },
-    {
-      type: "input",
-      message: "What is the engineer's email?",
-      name: "engineer-email",
-    },
-    {
-      type: "list",
-      message: "Would you like to add an additional team member?",
-      choices: ["intern"],
-    },
-    {
-      type: "input",
-      message: "What is the intern's name?",
-      name: "intern-name",
-    },
-    {
-      type: "input",
-      message: "What is the intern's employee ID?",
-      name: "intern-ID",
-    },
-    {
-      type: "input",
-      message: "What is the intern's email?",
-      name: "intern-email",
-    },
-    {
-      type: "input",
-      message: "What school does the intern attend?",
-      name: "intern-school",
-    },
-  ]);
-  function buildTeam() {
-    // Create the output directory if the output path doesn't exist
-    if (!fs.existsSync(OUTPUT_DIR)) {
-      fs.mkdirSync(OUTPUT_DIR);
-    }
-    fs.writeFileSync(outputPath, render(teamMembers), "utf-8");
-  }
+    
+  ]).then(answers => {
+      const manager = new Manager(answers.managerName, answers.managerID,answers.managerEmail,answers.managerOfficeNumber);
+      teamMembers.push(manager);
+
+      if (answers.addTeamMember) {
+          createTeam();
+      } else {
+          buildTeam();
+      }
+  })
+}; 
+
+
+
+function createTeam() {
+    inquirer.prompt([
+        {
+            type:"list",
+            message: "Which team member would you like to add?",
+            choices: ["Engineer", "Intern"],
+            name:"nextTeamMember"
+        }
+    ]).then(next => {
+        if(next.nextTeamMember === "Intern") {
+            createIntern();
+        } else {
+            createEngineer();
+        }
+    })
 }
-runApp();
+
+function createIntern() {
+    inquirer.prompt([
+        {
+            type: "input",
+            message: "What is the intern's name?",
+            name: "internName",
+        },
+        {
+            type: "input",
+            message: "What is the intern's employee ID?",
+            name: "internID",
+        },
+        {
+            type: "input",
+            message: "What is the intern's email?",
+            name: "internEmail",
+        },
+        {
+            type: "input",
+            message: "What school does the intern attend?",
+            name: "internSchool",
+        },
+        {
+            type: "confirm",
+            message:"Would you like to add another team member?",
+            name: "addTeamMember",
+        }
+
+
+
+
+
+    ]).then(answers => {
+        const intern = new Intern(answers.internName,answers.internID,answers.internEmail,answers.internSchool);
+        teamMembers.push(intern);
+        if(answers.add-team-member) {
+            createTeam();
+        } else {
+            buildTeam();
+        }
+    })
+}
+
+function createEngineer() {
+    inquirer.prompt([
+        {
+            type: "input",
+            message: "What is the engineer's name?",
+            name: "engineerName",
+        },
+        {
+            type: "input",
+            message: "What is the engineer's employee ID?",
+            name: "engineerID",
+        },
+        {
+            type: "input",
+            message: "What is the engineer's email?",
+            name: "engineerEmail",
+        },
+        {
+            type:"input",
+            message:"What is the engineer's GitHub username?",
+            name:"engineerGit"
+        },
+        {
+            type: "confirm",
+            message:"Would you like to add another team member?",
+            name: "addTeamMember",
+        },
+    
+    ]).then(answers => {
+        const engineer = new Engineer(answers.engineerName, answers.engineerID, answers.engineerEmail, answers.engineerGit)
+        teamMembers.push(engineer);
+        if(answers.addTeamMember) {
+            createTeam();
+        } else {
+            buildTeam();
+        }
+    })
+}
+
+
+
+function buildTeam() {
+// Create the output directory if the output path doesn't exist
+if (!fs.existsSync(OUTPUT_DIR)) {
+  fs.mkdirSync(OUTPUT_DIR);
+}
+fs.writeFileSync(outputPath, render(teamMembers), "utf-8")
+};
+
+createManager();
