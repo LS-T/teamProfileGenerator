@@ -8,10 +8,10 @@
 
  # User Story
 
-                                                      AS a user I want to be able to create a team page through a command line application
-                                                      I want to be able to select which role the new employee will have
-                                                      I want to be able to add additional team members to make a full team
-                                                      SO that I can visualize my new team members on the page rendered.
+                           AS a user I want to be able to create a team page through a command line application
+                           I want to be able to select which role the new employee will have
+                           I want to be able to add additional team members to make a full team
+                           SO that I can visualize my new team members on the page rendered.
 
 
 # Demo
